@@ -15,6 +15,8 @@
 
 namespace ml {
 
+#define MAX_TEXTURE_ARRAY (2048 * 4)
+
 API_AVAILABLE(macosx(10.13))
 std::vector<uint32_t> DemensionsInNHWC(const OperandMac& operand) {
   if (operand.dimensions.size() == 0 || operand.dimensions.size() > 4) {
@@ -48,6 +50,18 @@ MPSImage* CreateMPSImage(const CompiledModelMPS* compiled_model,
   }
   if (extend_channels != 0) {
     dimensions[3] = extend_channels;
+  }
+
+  // The MPSImage will exceed the maximum allowed number of 2048 slices that
+  // need to be reshaped and then reshape to expected dimensions when using. So
+  // the operation of using the input data must be Reshape Operation.
+  if (dimensions[3] > MAX_TEXTURE_ARRAY) {
+    uint32_t times = ceil(dimensions[3] * 1.0 / MAX_TEXTURE_ARRAY);
+    while (dimensions[3] % times != 0 && times < dimensions[3])
+      times++;
+    // Reshape feature channels with extending width.
+    dimensions[2] *= times;
+    dimensions[3] /= times;
   }
 
   MPSImageDescriptor* image_desc = [MPSImageDescriptor
@@ -986,7 +1000,7 @@ bool CompilationDelegateMPS::CompilePReLU(
     image_nodes[operation->outputs[0]] = prelu_node.resultImage;
   } else if (slope_operand.dimensions == input_operand.dimensions) {
     size_t reshape_channel = product(input_operand.dimensions);
-    if (reshape_channel < 2048) {
+    if (reshape_channel < MAX_TEXTURE_ARRAY) {
       if (@available(macOS 10.14.1, *)) {
         // Reshape for PReLU for each feature channel.
         MPSNNReshapeNode* reshape_for_prelu =
