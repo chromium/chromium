@@ -417,7 +417,7 @@ clock is within ten weeks of the embedded build timestamp. Key pinning is a
 useful security measure but it tightly couples client and server configurations
 and completely breaks when those configurations are out of sync. In order to
 manage that risk we need to ensure that we can promptly update pinning clients
-an in emergency and ensure that non-emergency changes can be deployed in a
+in an emergency and ensure that non-emergency changes can be deployed in a
 reasonable timeframe.
 
 Each of the conditions listed above helps ensure those properties:
